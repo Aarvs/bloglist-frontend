@@ -1,6 +1,24 @@
 import React from 'react';
+import { useState } from 'react';
 
-const Create = ({ title, setTitle, url, setUrl, likes, setLikes, addBlog }) => {
+const Create = ({createBlog}) => {
+  const [title, setTitle] = useState("")
+  const [url, setUrl] = useState("")
+  const [likes, setLikes] = useState(0)
+
+  const addBlog = (event) => {
+    event.preventDefault()
+    createBlog({
+      title,
+      url,
+      likes
+    })
+    // Clear the form fields after successful blog creation
+    setTitle("")
+    setUrl("")
+    setLikes(0)
+  }
+
   return (
     <div>
       <h2>Create a New Blog</h2>
