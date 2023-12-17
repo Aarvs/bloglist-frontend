@@ -15,9 +15,9 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState("")
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
+    blogService.getAll()
+    .then(blogs => blogs.sort((a, b) => b.likes - a.likes))
+    .then(blogs => setBlogs(blogs))
   }, [])
 
   useEffect(() => {
@@ -52,6 +52,29 @@ const App = () => {
       }, 5000);
     }
   }
+
+  const handleLikes = async(id, updatedBlog) => {
+    const blogId = id
+    try{
+      await blogService.update(id, updatedBlog)
+      setBlogs(blogs.map((b) => (b.id === blogId ? updatedBlog : b)))
+    } catch (error) {
+      console.log("error updating likes:", error.message)
+    }
+  };
+
+  const handleDelete = async(id) => {
+    try{
+      await blogService.remove(id)
+      setBlogs(blogs.filter((blog) => blog.id !== id))
+      setErrorMessage(`Blog deleted successfully`)
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000);
+    } catch(error){
+      console.log("error deleting blog", error.message)
+    }
+  };
 
   const addBlog = async (BlogObject) => {
     try {
@@ -99,7 +122,12 @@ const App = () => {
       </Togglable>
 
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog 
+          key={blog.id} 
+          blog={blog} 
+          update={handleLikes} 
+          remove={handleDelete} 
+        />
       )}
     </div>
   )
