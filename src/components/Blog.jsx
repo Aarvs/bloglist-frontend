@@ -31,7 +31,7 @@ const Blog = ({ blog, update, remove }) => {
 
   const deleteBlog = (event) =>{
     event.preventDefault()
-    if(window.confirm(`Remove blog ${blog.title} by ${blog.author}`)){
+    if(window.confirm(`Remove blog ${blog.title} by ${user.userName}`)){
       remove(blog.id)
     }
   }
