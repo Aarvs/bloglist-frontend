@@ -18,6 +18,12 @@ const Blog = ({ blog, update, remove }) => {
     marginBottom: 5
   }
 
+  const btnStyle = {
+    margin: 5,
+    borderRadius: 5,
+    border: '2px solid blue'
+  }
+
   // Here i used a local storage method to get the userName of the user who post the blog.
   const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser")
   const user = JSON.parse(loggedUserJSON)
@@ -39,9 +45,9 @@ const Blog = ({ blog, update, remove }) => {
   return(
     <div style={blogStyle}>
       <div style={hideDetails}>
-        {blog.title} {blog.author}
-        <button onClick={toggleVisibility}>View Details</button>
-        <button onClick={deleteBlog}>remove</button>
+        {blog.title} <hr /> By:{blog.author}
+        <button onClick={toggleVisibility} style={btnStyle}>View Details</button>
+        <button onClick={deleteBlog} style={btnStyle}>remove</button>
       </div> 
       <div style={showDetails}>
         <p>Title:{blog.title} {blog.author}</p>
