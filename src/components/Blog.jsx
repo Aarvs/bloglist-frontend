@@ -27,7 +27,7 @@ const Blog = ({ blog, update, remove }) => {
   // Here i used a local storage method to get the userName of the user who post the blog.
   const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser")
   const user = JSON.parse(loggedUserJSON)
-  console.log(user.name)
+  console.log(user ? user.name : "No user")
 
   const handleLike = (event) =>{
     event.preventDefault()
@@ -44,16 +44,17 @@ const Blog = ({ blog, update, remove }) => {
 
   return(
     <div style={blogStyle}>
-      <div style={hideDetails}>
-        {blog.title} <hr /> By:{blog.author}
+      <div style={hideDetails} data-testid="default-render">
+        <div>{blog.title}</div>  
+        <div data-testid="default-renderTwo">{blog.author}</div>
         <button onClick={toggleVisibility} style={btnStyle}>View Details</button>
         <button onClick={deleteBlog} style={btnStyle}>remove</button>
       </div> 
-      <div style={showDetails}>
+      <div style={showDetails} data-testid="click-render">
         <p>Title:{blog.title} {blog.author}</p>
         <p>Url:{blog.url}</p>
         <p>Likes:{blog.likes} <button onClick={handleLike}>like</button></p>
-        <p>Name:{user.userName}</p>
+        <p>Name:{user ? user.userName : "Anonymous"}</p>
         <button onClick={toggleVisibility} style={{marginBottom: "18px"}}>Hide Details</button>
       </div>
     </div>
