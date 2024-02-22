@@ -6,13 +6,17 @@ import Notification from './components/notify'
 import Create from './components/createNew'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
+import { addNotification } from './reducers/notifyReducer'
+import { useDispatch } from 'react-redux'
 
 const App = () => {
+
+  const dispatch = useDispatch()
+
   const [blogs, setBlogs] = useState([])
   const [userName, setUserName] = useState("")
   const [password, setPassword] = useState("")
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState("")
 
   useEffect(() => {
     blogService.getAll()
@@ -40,16 +44,11 @@ const App = () => {
       setUser(user)
       console.log(user)
       
-      setErrorMessage(`${userName} logged in successfully`)
-      setTimeout(() => {
-        setErrorMessage("")
-        setPassword("")
-      }, 5000);
+      dispatch(addNotification(`${userName} logged in succesfully`, 5))
+      setPassword("")
+
     } catch (exception) {
-      setErrorMessage("Wrong username or password", exception)
-      setTimeout(() => {
-        setErrorMessage("")
-      }, 5000);
+      dispatch(addNotification(`wrong username or password ${exception}`, 5))
     }
   }
 
@@ -67,11 +66,9 @@ const App = () => {
     try{
       await blogService.remove(id)
       setBlogs(blogs.filter((blog) => blog.id !== id))
-      setErrorMessage(`Blog deleted successfully`)
-      setTimeout(() => {
-        setErrorMessage('')
-      }, 5000);
-    } catch(error){
+      dispatch(addNotification(`Blog deleted successfully`, 5))
+
+    }catch(error){
       console.log("error deleting blog", error.message)
     }
   };
@@ -81,17 +78,10 @@ const App = () => {
       const returnedBlog = await blogService.create(BlogObject)
       console.log(returnedBlog)
       setBlogs(blogs.concat(returnedBlog))
-      setErrorMessage(`a new blog ${returnedBlog.title} is added by ${userName}`)
-      setTimeout(() => {
-        setErrorMessage("")
-        setUserName("")
-      }, 5000);
+      dispatch(addNotification(`a new blog ${returnedBlog.title} is added by ${userName}`, 5))
     } catch (error) {
       console.error("Error creating blog:", error.message)
-      setErrorMessage("Error creating blog")
-      setTimeout(() => {
-        setErrorMessage("")
-      }, 5000);
+      dispatch(addNotification(`Error creating blog`, 5))
     }
   }
 
@@ -112,7 +102,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification notification={errorMessage} />
+      <Notification/>
       <p>{user.name} logged in <button onClick={() => window.localStorage.clear()}>logout</button></p>
 
       <Togglable buttonLabel="Create New">
