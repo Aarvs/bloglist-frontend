@@ -1,6 +1,10 @@
 import { useState } from "react"
+import { useSelector } from "react-redux"
 
 const Blog = ({ blog, update, remove }) => {
+  const thisUser = useSelector(state => state.user[0])
+  console.log(thisUser)
+
   const [visible, setVisible] = useState(false)
 
   const toggleVisibility = () => {
@@ -25,9 +29,9 @@ const Blog = ({ blog, update, remove }) => {
   }
 
   // Here i used a local storage method to get the userName of the user who post the blog.
-  const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser")
-  const user = JSON.parse(loggedUserJSON)
-  console.log(user ? user.name : "No user")
+  // const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser")
+  // const user = JSON.parse(loggedUserJSON)
+  // console.log(user ? user.name : "No user")
 
   const handleLike = (event) =>{
     event.preventDefault()
@@ -37,7 +41,7 @@ const Blog = ({ blog, update, remove }) => {
 
   const deleteBlog = (event) =>{
     event.preventDefault()
-    if(window.confirm(`Remove blog ${blog.title} by ${user.userName}`)){
+    if(window.confirm(`Remove blog ${blog.title} by ${thisUser.userName}`)){
       remove(blog.id)
     }
   }
@@ -54,7 +58,7 @@ const Blog = ({ blog, update, remove }) => {
         <p>Title:{blog.title} {blog.author}</p>
         <p>Url:{blog.url}</p>
         <p>Likes:{blog.likes} <button onClick={handleLike}>like</button></p>
-        <p>Name:{user ? user.userName : "Anonymous"}</p>
+        <p>Name:{thisUser ? thisUser.userName : "Anonymous"}</p>
         <button onClick={toggleVisibility} style={{marginBottom: "18px"}}>Hide Details</button>
       </div>
     </div>

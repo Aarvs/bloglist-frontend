@@ -1,51 +1,48 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
-import loginService from './services/login'
 import Notification from './components/notify'
 import Create from './components/createNew'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import { addNotification } from './reducers/notifyReducer'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { allBlogPosts, createBlog, deleteBlog, updateBlog } from './reducers/blogsReducer'
+import { loggedUser } from './reducers/loggedInReducer'
 
 const App = () => {
 
   const dispatch = useDispatch()
 
-  const [blogs, setBlogs] = useState([])
+  const thisUser = useSelector(state => state.user[0])
+  console.log(thisUser)
+
+  const blogPosts = useSelector(state => state.posts)
+
   const [userName, setUserName] = useState("")
   const [password, setPassword] = useState("")
-  const [user, setUser] = useState(null)
 
   useEffect(() => {
-    blogService.getAll()
-    .then(blogs => blogs.sort((a, b) => b.likes - a.likes))
-    .then(blogs => setBlogs(blogs))
+    dispatch(allBlogPosts())
   }, [])
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser")
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+    if (thisUser) {
+      const user = typeof thisUser === 'string' ? JSON.parse(thisUser) : thisUser;
+      console.log(user)
       blogService.setToken(user.token)
+      setUserName(user.userName)
     }
-  }, [])
+  }, [thisUser])
 
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      const user = await loginService.login({
-        userName, password
-      })
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
-      console.log(user)
-      
+      dispatch(loggedUser(userName, password))
       dispatch(addNotification(`${userName} logged in succesfully`, 5))
+      // setUserName("")
       setPassword("")
+      
 
     } catch (exception) {
       dispatch(addNotification(`wrong username or password ${exception}`, 5))
@@ -55,8 +52,7 @@ const App = () => {
   const handleLikes = async(id, updatedBlog) => {
     const blogId = id
     try{
-      await blogService.update(id, updatedBlog)
-      setBlogs(blogs.map((b) => (b.id === blogId ? updatedBlog : b)))
+      dispatch(updateBlog(id, updatedBlog))
     } catch (error) {
       console.log("error updating likes:", error.message)
     }
@@ -64,8 +60,7 @@ const App = () => {
 
   const handleDelete = async(id) => {
     try{
-      await blogService.remove(id)
-      setBlogs(blogs.filter((blog) => blog.id !== id))
+      dispatch(deleteBlog(id))
       dispatch(addNotification(`Blog deleted successfully`, 5))
 
     }catch(error){
@@ -75,17 +70,15 @@ const App = () => {
 
   const addBlog = async (BlogObject) => {
     try {
-      const returnedBlog = await blogService.create(BlogObject)
-      console.log(returnedBlog)
-      setBlogs(blogs.concat(returnedBlog))
-      dispatch(addNotification(`a new blog ${returnedBlog.title} is added by ${userName}`, 5))
+      dispatch(createBlog(BlogObject))
+      dispatch(addNotification(`a new blog is added`, 5))
     } catch (error) {
       console.error("Error creating blog:", error.message)
       dispatch(addNotification(`Error creating blog`, 5))
     }
   }
 
-  if (user === null) {
+  if (thisUser == null && !window.localStorage.getItem("loggedBlogappUser")) {
     return (
       <Togglable buttonLabel="Login First">
         <LoginForm
@@ -103,7 +96,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification/>
-      <p>{user.name} logged in <button onClick={() => window.localStorage.clear()}>logout</button></p>
+      <p>{userName} logged in <button onClick={() => window.localStorage.clear()}>logout</button></p>
 
       <Togglable buttonLabel="Create New">
         <Create
@@ -111,7 +104,7 @@ const App = () => {
         />
       </Togglable>
 
-      {blogs.map(blog =>
+      {blogPosts.map(blog =>
         <Blog 
           key={blog.id} 
           blog={blog} 
@@ -123,5 +116,11 @@ const App = () => {
   )
 }
 
-export default App
+export default App;
+
+
+
+
+
+
 

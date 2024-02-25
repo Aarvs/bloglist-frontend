@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = "intial State";
 
-const notificatoinSlice = createSlice({
+const notificationSlice = createSlice({
   name: "blogs",
   initialState,
   reducers: {
@@ -26,6 +26,6 @@ export const addNotification = (text, durationInSeconds) => {
 };
 
 export const { setNotification, removeNotification } =
-  notificatoinSlice.actions;
+  notificationSlice.actions;
 
-export default notificatoinSlice.reducer;
+export default notificationSlice.reducer;
