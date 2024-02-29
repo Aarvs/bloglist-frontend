@@ -9,8 +9,13 @@ import { addNotification } from './reducers/notifyReducer'
 import { useDispatch, useSelector } from 'react-redux'
 import { allBlogPosts, createBlog, deleteBlog, updateBlog } from './reducers/blogsReducer'
 import { loggedUser } from './reducers/loggedInReducer'
+import { Routes, Route, Link, useMatch } from 'react-router-dom'
+import AllUsers from './components/UserList'
+import IndividualBlogposts from './components/SingleUserBlogposts'
 
 const App = () => {
+
+  const allBlogs = useSelector(state => state.userList)
 
   const dispatch = useDispatch()
 
@@ -92,17 +97,32 @@ const App = () => {
     )
   }
 
+  // const match = useMatch('users/:id')
+  // const SingleUserBlogs = match
+  //     ? allBlogs.find(user => user.id === Number(match.params.id))
+  //     : null
+  
+  // console.log(SingleUserBlogs)
   return (
     <div>
       <h2>blogs</h2>
       <Notification/>
       <p>{userName} logged in <button onClick={() => window.localStorage.clear()}>logout</button></p>
 
+      <div style={{padding: 10}}>
+        <Link to="/users">users</Link>
+      </div>
+
       <Togglable buttonLabel="Create New">
         <Create
           createBlog={addBlog}
         />
       </Togglable>
+
+      <Routes>
+          <Route path="/users" element={<AllUsers/>}/>   
+          <Route path='/users/:id' element={<IndividualBlogposts/>}/>      
+      </Routes>
 
       {blogPosts.map(blog =>
         <Blog 

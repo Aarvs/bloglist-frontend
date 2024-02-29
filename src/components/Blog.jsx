@@ -41,7 +41,7 @@ const Blog = ({ blog, update, remove }) => {
 
   const deleteBlog = (event) =>{
     event.preventDefault()
-    if(window.confirm(`Remove blog ${blog.title} by ${thisUser.userName}`)){
+    if(window.confirm(`Remove blog ${blog.title} by ${blog.userName}`)){
       remove(blog.id)
     }
   }
@@ -58,7 +58,7 @@ const Blog = ({ blog, update, remove }) => {
         <p>Title:{blog.title} {blog.author}</p>
         <p>Url:{blog.url}</p>
         <p>Likes:{blog.likes} <button onClick={handleLike}>like</button></p>
-        <p>Name:{thisUser ? thisUser.userName : "Anonymous"}</p>
+        <p>Name:{blog.userName}</p>
         <button onClick={toggleVisibility} style={{marginBottom: "18px"}}>Hide Details</button>
       </div>
     </div>
